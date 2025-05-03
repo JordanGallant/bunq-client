@@ -2,6 +2,9 @@
 
 import { FaHome, FaPlane, FaChartPie, FaChartLine, FaBtc } from 'react-icons/fa';
 
+const showHomePage = () => {
+  window.location.href = '/'; // or wherever your home page is
+};
 function NavItem({ icon: Icon, label, active = false, isBeta = false, onClick }) {
   const color = active ? 'text-blue-500' : 'text-gray-500';
 
@@ -23,7 +26,9 @@ function NavItem({ icon: Icon, label, active = false, isBeta = false, onClick })
 export default function BottomNav() {
   return (
     <nav className="bg-black border-t border-gray-800 px-2 py-2 flex justify-around items-center mt-auto">
-      <NavItem icon={FaHome} label="Home" active />
+      <button onClick={showHomePage}> 
+        <NavItem icon={FaHome} label="Home" active /> 
+      </button>
       <NavItem icon={FaPlane} label="Travel" />
       <NavItem icon={FaChartPie} label="Budgeting" />
       <NavItem icon={FaChartLine} label="Stocks" isBeta />
