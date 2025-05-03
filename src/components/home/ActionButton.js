@@ -1,9 +1,7 @@
 'use client';
 
 export default function ActionButton({ text, icon: Icon, color }) {
-  const handleClick = () => {
-    alert(`${text} button clicked!`);
-  };
+  
 
   return (
     <div className="flex flex-col items-center space-y-1">
