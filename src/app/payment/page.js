@@ -107,7 +107,7 @@ export default function Payment() {
 
 async function makePayment(accountNumber, amount) {
   try {
-    const response = await fetch(rootUrl + "/api/payment", {
+    const response = await fetch(rootUrl + "api/payment", {
       method: 'POST',
       body: JSON.stringify({ accountNumber, amount }),
     });
