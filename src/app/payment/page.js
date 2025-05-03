@@ -12,15 +12,27 @@ export default function Payment() {
   const [message, setMessage] = useState('');
   const notificationCount = 1;
 
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
     if (!accountNumber || !amount) {
+      setMessage("Please fill in all fields.");
       return;
     }
     
     setIsSubmitting(true);
-    
-    // Simulate API cal
-  };
+    setMessage('');
+
+  try {
+    const result = await makePayment(accountNumber, amount);
+    setMessage('Payment successful!');
+    console.log('Payment successful:', JSON.stringify(result, null, 2));
+    setAccountNumber('');
+    setAmount('');
+  } catch (error) {
+    setMessage(`Payment failed: ${error.message}`);
+  } finally {
+    setIsSubmitting(false);
+  }
+};
 
   makePayment(accountNumber, amount);
   return (
@@ -118,7 +130,6 @@ async function makePayment(iban, amount) {
       }
   
       const data = await response.json();
-      console.log('Payment successful:', data);
       return data;
     } catch (error) {
       console.error('Error making payment:', error);
