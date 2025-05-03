@@ -1,153 +1,136 @@
 'use client';
+import { useState } from 'react';
+import AppHeader from '../../components/layout/AppHeader';
+import BottomNav from '../../components/layout/BottomNav';
 
-import { useRef, useState, useEffect } from 'react';
+export default function Payment() {
+  const [accountNumber, setAccountNumber] = useState('');
+  const [amount, setAmount] = useState('');
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [message, setMessage] = useState('');
+  const notificationCount = 1;
 
-export default function SimpleCameraCapture({ onImageCaptured }) {
-  const videoRef = useRef(null);
-  const [image, setImage] = useState(null);
-  const [stream, setStream] = useState(null);
-
-  const startCamera = async () => {
-    try {
-      const mediaStream = await navigator.mediaDevices.getUserMedia({
-        video: { facingMode: 'user' },
-      });
-      videoRef.current.srcObject = mediaStream;
-      setStream(mediaStream);
-    } catch (err) {
-      alert('Camera access denied or not available');
-      console.error(err);
-    }
-  };
-
-  const capturePhoto = () => {
-    const video = videoRef.current;
-    const canvas = document.createElement('canvas');
-    canvas.width = video.videoWidth;
-    canvas.height = video.videoHeight;
-    const ctx = canvas.getContext('2d');
-    ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
-    const photo = canvas.toDataURL('image/png');
-    setImage(photo);
-    
-    // Call the callback with the image URL if provided
-    if (onImageCaptured) {
-      onImageCaptured(photo);
-    }
-    
-    // Stop camera
-    if (stream) {
-      stream.getTracks().forEach(track => track.stop());
-    }
-  };
-
-  const uploadImage = async () => {
-    if (!image) {
-      console.error("No image selected");
+  const handleSubmit = async () => {
+    if (!accountNumber || !amount) {
+      setMessage("Please fill in all fields.");
       return;
     }
-    try {
-      // Convert base64 to blob
-      const res = await fetch(image);
-      const blob = await res.blob();
-      // Create a proper file object with the correct name and type
-      const file = new File([blob], "captured-image.png", { type: "image/png" });
-      // Append to FormData
-      const formData = new FormData();
-      formData.append('file', file);
-      console.log("Uploading image...");
-      // Send to backend
-      const response = await fetch('https://bunq-api.onrender.com/face_swap', {
-        method: 'POST',
-        body: formData,
-      });
-      if (!response.ok) {
-        const errorData = await response.text();
-        console.error(`Upload failed with status ${response.status}: ${errorData}`);
-        return;
-      }
-      // For image responses, we need to handle them differently
-      const contentType = response.headers.get('content-type');
-      if (contentType && contentType.includes('image')) {
-        // Handle image response
-        const imageBlob = await response.blob();
-        const imageUrl = URL.createObjectURL(imageBlob);
-        console.log('Face swap successful, image URL:', imageUrl);
-        setImage(imageUrl);
-        
-        // Call the callback with the processed image URL if provided
-        if (onImageCaptured) {
-          onImageCaptured(imageUrl);
-        }
-        
-        return imageUrl;
-      } else {
-        // Handle JSON response
-        const result = await response.json();
-        console.log('Upload result:', result);
-        return result;
-      }
-    } catch (error) {
-      console.error('Error during face swap:', error);
-    }
-  };
+    
+    setIsSubmitting(true);
+    setMessage('');
 
-  useEffect(() => {
-    return () => {
-      // Clean up on unmount
-      if (stream) {
-        stream.getTracks().forEach(track => track.stop());
-      }
-    };
-  }, [stream]);
+  try {
+    const result = await makePayment(accountNumber, amount);
+    setMessage('Payment successful!');
+    console.log('Payment successful:', JSON.stringify(result, null, 2));
+    setAccountNumber('');
+    setAmount('');
+  } catch (error) {
+    setMessage(`Payment failed: ${error.message}`);
+  } finally {
+    setIsSubmitting(false);
+  }
+};
 
-  useEffect(() => {
-    // Start camera automatically when component mounts
-    startCamera();
-  }, []);
-
+  makePayment(accountNumber, amount);
   return (
-    <div className="flex flex-col items-center gap-4">
-      {!image && (
-        <>
-          <video
-            ref={videoRef}
-            autoPlay
-            playsInline
-            muted
-            className="w-64 h-64 object-cover rounded-full bg-black"
-          />
-          <button
-            onClick={capturePhoto}
-            className="bg-green-500 text-white px-4 py-2 rounded"
-          >
-            Capture Photo
-          </button>
-        </>
-      )}
-      {image && (
-        <>
-          <img
-            src={image}
-            alt="Captured"
-            className="w-64 h-64 object-cover rounded-full"
-          />
-          <div className="flex gap-3">
+    <div className="bg-black text-white h-screen flex flex-col font-sans">
+      <div className="max-w-sm mx-auto flex flex-col flex-grow w-full">
+        <AppHeader notificationCount={notificationCount} />
+
+        <main className="flex-grow overflow-y-auto px-4 py-5 space-y-6">
+          <h1 className="text-xl font-medium text-center mt-2 mb-6">Make a Payment</h1>
+          
+          {message && (
+            <div className="mb-4 p-3 bg-green-900 text-green-100 rounded-md text-center">
+              {message}
+            </div>
+          )}
+          
+          <div className="bg-zinc-900 rounded-xl p-5 space-y-5">
+            <div className="flex flex-col space-y-2">
+              <label htmlFor="account" className="text-gray-300 text-sm font-medium">
+                Bank Account Number
+              </label>
+              <input
+                id="account"
+                type="text"
+                value={accountNumber}
+                onChange={(e) => setAccountNumber(e.target.value)}
+                className="px-4 py-3 border border-zinc-700 bg-zinc-800 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-white"
+                placeholder="Enter account number"
+              />
+            </div>
+            
+            <div className="flex flex-col space-y-2">
+              <label htmlFor="amount" className="text-gray-300 text-sm font-medium">
+                Amount
+              </label>
+              <div className="relative">
+                <div className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
+                  <span className="text-gray-400">€</span>
+                </div>
+                <input
+                  id="amount"
+                  type="number"
+                  value={amount}
+                  onChange={(e) => setAmount(e.target.value)}
+                  className="pl-7 px-4 py-3 border border-zinc-700 bg-zinc-800 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 w-full text-white"
+                  placeholder="0.00"
+                  min="0.01"
+                  step="0.01"
+                />
+              </div>
+            </div>
+            
             <button
-              onClick={uploadImage}
-              className="bg-blue-500 text-white px-4 py-2 rounded"
+              onClick={handleSubmit}
+              disabled={isSubmitting}
+              className="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-3 px-4 rounded-lg transition duration-300 ease-in-out flex justify-center mt-4"
             >
-              Download Photo
-            </button>
-            <button
-              onClick={() => setImage(null)}
-              className="bg-red-500 text-white px-4 py-2 rounded"
-            >
-              Retake
+              {isSubmitting ? (
+                <span className="flex items-center">
+                  <svg className="animate-spin -ml-1 mr-2 h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                  </svg>
+                  Processing...
+                </span>
+              ) : (
+                "Send Payment"
+              )}
             </button>
           </div>
-        </>
-      )}
+        </main>
+
+        <BottomNav />
+      </div>
     </div>
   );
 }
+
+async function makePayment(iban, amount) {
+    try {
+      const response = await fetch('https://bunq-api.onrender.com/payment', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ 
+          iban, // IBAN used for matching backend format
+          amount 
+        }),
+      });
+  
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({}));
+        throw new Error(`Payment failed: ${errorData.message || response.statusText}`);
+      }
+  
+      const data = await response.json();
+      return data;
+    } catch (error) {
+      console.error('Error making payment:', error);
+      throw error; // Re-throw to allow handling by the caller
+    }
+  }
