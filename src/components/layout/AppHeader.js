@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import { FaRegUserCircle, FaBell, FaCamera, FaRegSmile } from 'react-icons/fa';
 import SimpleCameraCapture from '../../components/camera';
+import Link from 'next/link';
 
 export default function AppHeader({ notificationCount }) {
   const [showCamera, setShowCamera] = useState(false);
@@ -47,7 +48,9 @@ export default function AppHeader({ notificationCount }) {
               </span>
             )}
           </div>
-          <h1 className="text-4xl font-bold ml-2">Home</h1>
+          <Link href="/">
+            <h1 className="text-4xl font-bold ml-2 cursor-pointer">Home</h1>
+          </Link>
         </div>
         <div className="flex items-center space-x-3">
           <button onClick={() => setShowCamera(true)} className="hover:opacity-80">

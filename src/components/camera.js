@@ -29,12 +29,6 @@ export default function SimpleCameraCapture({ onImageCaptured }) {
     ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
     const photo = canvas.toDataURL('image/png');
     setImage(photo);
-    
-    // Call the callback with the image URL if provided
-    if (onImageCaptured) {
-      onImageCaptured(photo);
-    }
-    
     // Stop camera
     if (stream) {
       stream.getTracks().forEach(track => track.stop());
@@ -75,7 +69,7 @@ export default function SimpleCameraCapture({ onImageCaptured }) {
         console.log('Face swap successful, image URL:', imageUrl);
         setImage(imageUrl);
         
-        // Call the callback with the processed image URL if provided
+        // Call the onImageCaptured prop with the new image URL
         if (onImageCaptured) {
           onImageCaptured(imageUrl);
         }
@@ -101,11 +95,6 @@ export default function SimpleCameraCapture({ onImageCaptured }) {
     };
   }, [stream]);
 
-  useEffect(() => {
-    // Start camera automatically when component mounts
-    startCamera();
-  }, []);
-
   return (
     <div className="flex flex-col items-center gap-4">
       {!image && (
@@ -117,6 +106,12 @@ export default function SimpleCameraCapture({ onImageCaptured }) {
             muted
             className="w-64 h-64 object-cover rounded-full bg-black"
           />
+          <button
+            onClick={startCamera}
+            className="bg-blue-500 text-white px-4 py-2 rounded"
+          >
+            Start Camera
+          </button>
           <button
             onClick={capturePhoto}
             className="bg-green-500 text-white px-4 py-2 rounded"
