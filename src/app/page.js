@@ -1,12 +1,14 @@
-'use client'
-import AvatarCameraButton from "./components/camera";
-import BottomMenuBar from "./components/menubar";
+'use client';
+
+import { useEffect } from 'react';
+import { useRouter } from 'next/navigation';
+
 export default function Home() {
-  return (
-    <>
-    <h1>Hello</h1>
-    <AvatarCameraButton/>
-    <BottomMenuBar />
-    </>  
-    );
+  const router = useRouter();
+
+  useEffect(() => {
+    router.push('/banking');
+  }, [router]);
+
+  return null;
 }
