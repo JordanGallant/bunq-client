@@ -4,15 +4,9 @@ import { FaHome, FaPlane, FaChartPie, FaChartLine, FaBtc } from 'react-icons/fa'
 
 function NavItem({ icon: Icon, label, active = false, isBeta = false, onClick }) {
   const color = active ? 'text-blue-500' : 'text-gray-500';
-  
-  const handleClick = () => {
-    if (onClick) onClick();
-    else alert(`${label} clicked!`);
-  };
 
   return (
-    <button 
-      onClick={handleClick} 
+    <button  
       className={`flex flex-col items-center space-y-1 ${color} hover:text-gray-300 transition-colors relative`}
     >
       {isBeta && (
