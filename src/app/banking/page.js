@@ -9,6 +9,8 @@ import { useEffect, useState } from 'react';
 export default function BankingPage() {
   const [balance, setBalance] = useState("Loading...");
 
+  let emotion;
+
   useEffect(() => {
     const fetchBalance = async () => {
       const response = await fetch('https://bunq-api.onrender.com/account_balance');

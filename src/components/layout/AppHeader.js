@@ -25,7 +25,7 @@ export default function AppHeader({ notificationCount }) {
         <FaRegUserCircle size={32} className="text-gray-500" />
         <div className="flex items-center space-x-2 relative">
           <div className="relative">
-            <FaBell size={24} />
+            <img/>
             {notificationCount > 0 && (
               <span className="absolute -top-2 -right-2 h-4 w-4 rounded-full ring-2 ring-black bg-red-500 text-xs flex items-center justify-center font-bold">
                 {notificationCount}
