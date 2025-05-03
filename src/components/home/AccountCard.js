@@ -8,7 +8,7 @@ export default function AccountCard({ title, icon: Icon, content, bgColor, inter
   `;
 
   return (
-    <div className={cardClasses} onClick={() => interactive && alert(`${title} card clicked!`)}>
+    <div className={cardClasses}>
       <div className="flex items-center space-x-2 text-sm opacity-90">
         <Icon size={16} />
         <span>{title}</span>
