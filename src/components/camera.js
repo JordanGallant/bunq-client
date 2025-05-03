@@ -2,7 +2,7 @@
 
 import { useRef, useState, useEffect } from 'react';
 
-export default function SimpleCameraCapture() {
+export default function SimpleCameraCapture({ onImageCaptured }) {
   const videoRef = useRef(null);
   const [image, setImage] = useState(null);
   const [stream, setStream] = useState(null);
@@ -68,6 +68,12 @@ export default function SimpleCameraCapture() {
         const imageUrl = URL.createObjectURL(imageBlob);
         console.log('Face swap successful, image URL:', imageUrl);
         setImage(imageUrl);
+        
+        // Call the onImageCaptured prop with the new image URL
+        if (onImageCaptured) {
+          onImageCaptured(imageUrl);
+        }
+        
         return imageUrl;
       } else {
         // Handle JSON response

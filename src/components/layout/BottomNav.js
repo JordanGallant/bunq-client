@@ -26,9 +26,7 @@ function NavItem({ icon: Icon, label, active = false, isBeta = false, onClick })
 export default function BottomNav() {
   return (
     <nav className="bg-black border-t border-gray-800 px-2 py-2 flex justify-around items-center mt-auto">
-      <button onClick={showHomePage}> 
-        <NavItem icon={FaHome} label="Home" active /> 
-      </button>
+      <NavItem icon={FaHome} label="Home" active onClick={showHomePage} />
       <NavItem icon={FaPlane} label="Travel" />
       <NavItem icon={FaChartPie} label="Budgeting" />
       <NavItem icon={FaChartLine} label="Stocks" isBeta />
