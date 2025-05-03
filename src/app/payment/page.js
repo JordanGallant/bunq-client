@@ -3,6 +3,8 @@ import { useState } from 'react';
 import AppHeader from '../../components/layout/AppHeader';
 import BottomNav from '../../components/layout/BottomNav';
 
+const rootUrl = "http:://localhost:8000/"
+
 export default function Payment() {
   const [accountNumber, setAccountNumber] = useState('');
   const [amount, setAmount] = useState('');
@@ -26,6 +28,7 @@ export default function Payment() {
     }, 1500);
   };
 
+  makePayment(accountNumber, amount);
   return (
     <div className="bg-black text-white h-screen flex flex-col font-sans">
       <div className="max-w-sm mx-auto flex flex-col flex-grow w-full">
@@ -100,4 +103,23 @@ export default function Payment() {
       </div>
     </div>
   );
+}
+
+async function makePayment(accountNumber, amount) {
+  try {
+    const response = await fetch(rootUrl + "/api/payment", {
+      method: 'POST',
+      body: JSON.stringify({ accountNumber, amount }),
+    });
+
+    if (!response.ok) {
+      throw new Error('Payment failed');
+    }
+
+    const data = await response.json(); // Assuming the server returns JSON data
+    console.log(data); // Handle the response data as needed
+    return data;
+  } catch (error) {
+    console.error('Error:', error);
+  }
 }
