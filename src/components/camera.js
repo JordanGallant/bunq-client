@@ -25,13 +25,10 @@ export default function SimpleCameraCapture() {
     const canvas = document.createElement('canvas');
     canvas.width = video.videoWidth;
     canvas.height = video.videoHeight;
-
     const ctx = canvas.getContext('2d');
     ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
-
     const photo = canvas.toDataURL('image/png');
     setImage(photo);
-
     // Stop camera
     if (stream) {
       stream.getTracks().forEach(track => track.stop());
@@ -43,46 +40,34 @@ export default function SimpleCameraCapture() {
       console.error("No image selected");
       return;
     }
-    
     try {
       // Convert base64 to blob
       const res = await fetch(image);
       const blob = await res.blob();
-      
       // Create a proper file object with the correct name and type
       const file = new File([blob], "captured-image.png", { type: "image/png" });
-      
       // Append to FormData
       const formData = new FormData();
       formData.append('file', file);
-      
       console.log("Uploading image...");
-      
       // Send to backend
       const response = await fetch('https://bunq-api.onrender.com/face_swap', {
         method: 'POST',
         body: formData,
       });
-      
       if (!response.ok) {
         const errorData = await response.text();
         console.error(`Upload failed with status ${response.status}: ${errorData}`);
-        // Handle error appropriately in the UI
         return;
       }
-      
       // For image responses, we need to handle them differently
       const contentType = response.headers.get('content-type');
-      
       if (contentType && contentType.includes('image')) {
         // Handle image response
         const imageBlob = await response.blob();
         const imageUrl = URL.createObjectURL(imageBlob);
-        
-        // Display the image or update state with the new image URL
         console.log('Face swap successful, image URL:', imageUrl);
         setImage(imageUrl);
-        
         return imageUrl;
       } else {
         // Handle JSON response
@@ -92,7 +77,6 @@ export default function SimpleCameraCapture() {
       }
     } catch (error) {
       console.error('Error during face swap:', error);
-      // Handle error appropriately in the UI
     }
   };
 
@@ -130,7 +114,6 @@ export default function SimpleCameraCapture() {
           </button>
         </>
       )}
-
       {image && (
         <>
           <img
