@@ -8,7 +8,7 @@ export default function ActionButtons() {
   const router = useRouter();
 
   const handlePayClick = () => {
-    router.push('/send');
+    router.push('/payment');
   };
 
   return (
