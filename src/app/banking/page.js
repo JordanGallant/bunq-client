@@ -9,8 +9,6 @@ import { useEffect, useState } from 'react';
 export default function BankingPage() {
   const [balance, setBalance] = useState("Loading...");
 
-  let emotion;
-
   useEffect(() => {
     const fetchBalance = async () => {
       const response = await fetch('https://bunq-api.onrender.com/account_balance');
@@ -24,9 +22,9 @@ export default function BankingPage() {
   const userName = "Cao Minh Nguyen";
   const notificationCount = 1;
   const accounts = {
-    totalBalance: balance,
-    main: "€ 0.00",
-    savings: "€ 0.00",
+    totalBalance: `€ ${balance}`,
+    main: `€ ${balance}`,
+    savings: "0.00",
   };
 
   const awaitingEvent = {

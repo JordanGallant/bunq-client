@@ -3,8 +3,6 @@ import { useState } from 'react';
 import AppHeader from '../../components/layout/AppHeader';
 import BottomNav from '../../components/layout/BottomNav';
 
-const rootUrl = "http:://localhost:8000/"
-
 export default function Payment() {
   const [accountNumber, setAccountNumber] = useState('');
   const [amount, setAmount] = useState('');
