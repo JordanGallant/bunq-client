@@ -22,8 +22,8 @@ export default function BankingPage() {
   const userName = "Cao Minh Nguyen";
   const notificationCount = 1;
   const accounts = {
-    totalBalance: `€ ${balance}`,
-    main: `€ ${balance}`,
+    totalBalance: balance,
+    main: balance,
     savings: "0.00",
   };
 
