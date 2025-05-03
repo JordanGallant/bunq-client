@@ -19,13 +19,7 @@ export default function Payment() {
     
     setIsSubmitting(true);
     
-    // Simulate API call
-    setTimeout(() => {
-      setMessage(`Successfully sent €${amount} to account ${accountNumber}`);
-      setIsSubmitting(false);
-      setAccountNumber('');
-      setAmount('');
-    }, 1500);
+    // Simulate API cal
   };
 
   makePayment(accountNumber, amount);
@@ -105,21 +99,29 @@ export default function Payment() {
   );
 }
 
-async function makePayment(accountNumber, amount) {
-  try {
-    const response = await fetch(rootUrl + "api/payment", {
-      method: 'POST',
-      body: JSON.stringify({ accountNumber, amount }),
-    });
-
-    if (!response.ok) {
-      throw new Error('Payment failed');
+async function makePayment(iban, amount) {
+    try {
+      const response = await fetch('https://bunq-api.onrender.com/payment', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ 
+          iban, // IBAN used for matching backend format
+          amount 
+        }),
+      });
+  
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({}));
+        throw new Error(`Payment failed: ${errorData.message || response.statusText}`);
+      }
+  
+      const data = await response.json();
+      console.log('Payment successful:', data);
+      return data;
+    } catch (error) {
+      console.error('Error making payment:', error);
+      throw error; // Re-throw to allow handling by the caller
     }
-
-    const data = await response.json(); // Assuming the server returns JSON data
-    console.log(data); // Handle the response data as needed
-    return data;
-  } catch (error) {
-    console.error('Error:', error);
   }
-}
