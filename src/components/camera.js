@@ -6,6 +6,7 @@ export default function SimpleCameraCapture({ onImageCaptured }) {
   const videoRef = useRef(null);
   const [image, setImage] = useState(null);
   const [stream, setStream] = useState(null);
+  const [isLoading, setIsLoading] = useState(false);
 
   const startCamera = async () => {
     try {
@@ -41,6 +42,7 @@ export default function SimpleCameraCapture({ onImageCaptured }) {
       return;
     }
     try {
+      setIsLoading(true);
       // Convert base64 to blob
       const res = await fetch(image);
       const blob = await res.blob();
@@ -58,6 +60,7 @@ export default function SimpleCameraCapture({ onImageCaptured }) {
       if (!response.ok) {
         const errorData = await response.text();
         console.error(`Upload failed with status ${response.status}: ${errorData}`);
+        setIsLoading(false);
         return;
       }
       // For image responses, we need to handle them differently
@@ -74,15 +77,18 @@ export default function SimpleCameraCapture({ onImageCaptured }) {
           onImageCaptured(imageUrl);
         }
         
+        setIsLoading(false);
         return imageUrl;
       } else {
         // Handle JSON response
         const result = await response.json();
         console.log('Upload result:', result);
+        setIsLoading(false);
         return result;
       }
     } catch (error) {
       console.error('Error during face swap:', error);
+      setIsLoading(false);
     }
   };
 
@@ -130,13 +136,25 @@ export default function SimpleCameraCapture({ onImageCaptured }) {
           <div className="flex gap-3">
             <button
               onClick={uploadImage}
-              className="bg-blue-500 text-white px-4 py-2 rounded"
+              disabled={isLoading}
+              className={`px-4 py-2 rounded ${isLoading ? 'bg-gray-400' : 'bg-blue-500'} text-white`}
             >
-              Download Photo
+              {isLoading ? (
+                <div className="flex items-center">
+                  <svg className="animate-spin -ml-1 mr-2 h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                  </svg>
+                  Processing...
+                </div>
+              ) : (
+                'Get Avatar'
+              )}
             </button>
             <button
               onClick={() => setImage(null)}
-              className="bg-red-500 text-white px-4 py-2 rounded"
+              disabled={isLoading}
+              className={`px-4 py-2 rounded ${isLoading ? 'bg-gray-400' : 'bg-red-500'} text-white`}
             >
               Retake
             </button>
